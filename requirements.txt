@@ -1,0 +1,54 @@
+# ====================================================================
+# requirements.txt — List of Python libraries this project needs
+#
+# WHAT IS THIS FILE?
+# Python doesn't come with every tool you need. This file lists the
+# extra libraries (other people's code) that our project depends on.
+#
+# HOW TO USE IT:
+# Run this command in your terminal (one time, when setting up):
+#     pip install -r requirements.txt
+#
+# That command reads this file and installs everything listed below.
+# Think of it like a shopping list — you hand it to pip (Python's
+# package installer) and it goes and gets everything for you.
+#
+# WHY EACH LIBRARY IS HERE:
+# We don't add libraries for fun. Every one listed below has a
+# specific job. If it's not needed, it shouldn't be here.
+# ====================================================================
+
+# --- Core (needed for the project to run at all) ---
+
+# "requests" lets Python download web pages and talk to websites.
+# We use it to fetch payer websites where they publish PA metrics.
+# Without it, Python can't easily visit a URL and get the page content.
+requests>=2.31
+
+# "beautifulsoup4" reads HTML (web page code) and lets you pull out
+# specific pieces of data. After "requests" downloads a page,
+# BeautifulSoup helps us find the numbers we need in that page.
+# The "4" is the version — it's the standard name, not a typo.
+beautifulsoup4>=4.12
+
+# "pandas" is the most popular data analysis library in Python.
+# Think of it as "Excel inside Python." It gives you tables (called
+# "DataFrames") that you can sort, filter, merge, and analyze.
+# We use it for everything from storing collected data to running
+# comparisons between payers.
+pandas>=2.1
+
+# "matplotlib" creates charts and graphs (bar charts, line graphs, etc.)
+# It's the foundational plotting library in Python — almost every
+# data visualization library builds on top of it.
+matplotlib>=3.8
+
+# --- Development tools (only needed when writing/testing code) ---
+
+# "pytest" runs our automated tests. You write test functions that
+# check if your code works, then pytest finds and runs them all.
+pytest>=7.4
+
+# "ruff" checks your code for style issues and common mistakes.
+# Think of it like spell-check but for Python code.
+ruff>=0.1

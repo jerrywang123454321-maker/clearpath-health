@@ -1,0 +1,65 @@
+# ============================================================
+# .gitignore — Tells git which files to IGNORE (never track)
+# These are files that should NOT be uploaded to GitHub because
+# they are either: auto-generated, contain secrets, or are
+# too large / machine-specific to share.
+# ============================================================
+
+# --- Python stuff ---
+# When Python runs your code, it creates compiled versions
+# of your .py files (ending in .pyc) in a __pycache__ folder.
+# These are auto-generated and machine-specific — never share them.
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments — these are local copies of Python
+# libraries installed on YOUR computer. Other people will
+# install their own using requirements.txt.
+venv/
+.venv/
+env/
+
+# --- Secrets and credentials ---
+# NEVER commit these. They contain passwords, API keys, etc.
+.env
+*.secret
+credentials.json
+
+# --- Data files that are too large for GitHub ---
+# Raw data goes in data/raw/ but large files shouldn't be
+# tracked by git. We'll use .gitkeep files to preserve the
+# folder structure without tracking the actual data files.
+*.csv
+*.xlsx
+*.json
+!package.json
+data/raw/*.pdf
+data/raw/*.html
+
+# --- OS junk files ---
+# Your operating system creates these automatically.
+# They mean nothing to the project.
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- IDE / editor files ---
+# These are settings specific to YOUR code editor.
+# Other people use different editors.
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Build and distribution ---
+dist/
+build/
+*.egg-info/
+
+# --- Database files ---
+# The actual database file is generated from our schema.
+# Don't track it — it may contain real data.
+*.db
+*.sqlite
+*.sqlite3

@@ -1,0 +1,61 @@
+# ====================================================================
+# pyproject.toml — The "ID card" for this Python project
+#
+# WHAT IS THIS FILE?
+# This file tells Python (and tools like pip) basic info about your
+# project: its name, version, what Python version it needs, etc.
+#
+# Think of it like the nutrition label on food — it describes what's
+# inside the package so tools know how to work with it.
+#
+# YOU RARELY NEED TO EDIT THIS. It's mostly set-and-forget.
+# ====================================================================
+
+[build-system]
+# This tells Python what tool to use to "build" (package) the project.
+# setuptools is the most common and well-supported option.
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+# Basic project info
+name = "clearpath-health"
+version = "0.1.0"
+description = "Prior Authorization Efficiency Benchmarking & Research"
+readme = "README.md"
+
+# This project needs Python 3.11 or newer.
+# Python 3.11 came out in 2022 — it's modern but not bleeding-edge.
+requires-python = ">=3.11"
+
+# WHO made this (you!)
+authors = [
+    {name = "Jerry Wang", email = "placeholder@clearpath-health.org"},
+]
+
+# The license tells other people how they're allowed to use your code.
+# MIT is the most permissive open-source license — anyone can use it
+# for anything, including commercial use, as long as they credit you.
+license = "MIT"
+
+# These are the Python libraries your project needs to run.
+# When someone installs your project, pip will automatically
+# install these too.
+dependencies = [
+    "requests>=2.31",        # For downloading web pages from payer sites
+    "beautifulsoup4>=4.12",  # For reading/parsing HTML web pages
+    "pandas>=2.1",           # For working with data tables (like Excel in Python)
+    "matplotlib>=3.8",       # For creating charts and graphs
+]
+
+# "Optional" dependencies — not needed for basic use, but needed
+# for specific tasks. Install with: pip install clearpath-health[dev]
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",           # For running automated tests
+    "ruff>=0.1",             # For checking code style
+]
+
+# This tells setuptools where to find the source code
+[tool.setuptools.packages.find]
+where = ["src"]
