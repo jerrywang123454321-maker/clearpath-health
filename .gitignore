@@ -34,8 +34,15 @@ credentials.json
 *.xlsx
 *.json
 !package.json
+!data/monitor_urls.json
 data/raw/*.pdf
 data/raw/*.html
+
+# Monitor state file — machine-specific, regenerated on each run
+data/monitor_hashes.json
+
+# Monitor logs — useful locally but not needed in git
+data/monitor_logs/
 
 # --- OS junk files ---
 # Your operating system creates these automatically.

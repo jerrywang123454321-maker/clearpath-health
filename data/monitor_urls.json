@@ -1,0 +1,170 @@
+[
+    {
+        "payer": "UnitedHealthcare",
+        "url": "https://www.uhcprovider.com/en/prior-auth-advance-notification.html",
+        "type": "MA",
+        "notes": "Provider PA hub. Watch for new metrics subpage link."
+    },
+    {
+        "payer": "Humana",
+        "url": "https://www.humana.com",
+        "type": "MA",
+        "notes": "No known PA metrics page yet. Check homepage for announcements."
+    },
+    {
+        "payer": "Aetna",
+        "url": "https://www.aetna.com",
+        "type": "MA",
+        "notes": "No known PA metrics page yet."
+    },
+    {
+        "payer": "Elevance Health",
+        "url": "https://www.elevancehealth.com/our-approach-to-health/whole-health/prior-authorization",
+        "type": "MA",
+        "notes": "Has a PA approach page. Watch for metrics data to appear."
+    },
+    {
+        "payer": "Kaiser Permanente",
+        "url": "https://www.kaiserpermanente.org",
+        "type": "MA",
+        "notes": "No known PA metrics page yet."
+    },
+    {
+        "payer": "Centene (Wellcare)",
+        "url": "https://www.wellcare.com",
+        "type": "MA",
+        "notes": "Has published PA timeline bulletins but no metrics yet."
+    },
+    {
+        "payer": "HCSC",
+        "url": "https://www.hcsc.com",
+        "type": "MA",
+        "notes": "Some metrics in press releases. Watch for dedicated page."
+    },
+    {
+        "payer": "BCBS Michigan",
+        "url": "https://www.bcbsm.com/important-information/prior-authorization/",
+        "type": "MA",
+        "notes": "Has PA info page. Watch for metrics addition."
+    },
+    {
+        "payer": "Devoted Health",
+        "url": "https://www.devoted.com",
+        "type": "MA",
+        "notes": "Metrics available by phone but not posted online yet."
+    },
+    {
+        "payer": "SCAN Health Plan",
+        "url": "https://www.scanhealthplan.com/en/providers/joining-the-scan-network/prior-authorizations/scan-referral-intake-portal",
+        "type": "MA",
+        "notes": "Some stats embedded on this page (87% didn't need PA, <1% denial)."
+    },
+    {
+        "payer": "Highmark Health",
+        "url": "https://providers.highmark.com/authorization.html",
+        "type": "MA",
+        "notes": "Provider auth page. Watch for metrics."
+    },
+    {
+        "payer": "Florida Blue",
+        "url": "https://www.floridablue.com/blog/florida-blues-approach-to-prior-authorizations",
+        "type": "MA",
+        "notes": "Blog post with some stats (96% Rx, 93% medical not subject to PA)."
+    },
+    {
+        "payer": "Alignment Healthcare",
+        "url": "https://www.alignmenthealthcare.com",
+        "type": "MA",
+        "notes": "No PA content found on public site."
+    },
+    {
+        "payer": "Molina Healthcare",
+        "url": "https://www.molinahealthcare.com",
+        "type": "MA",
+        "notes": "Has CMS-0057 bulletins. Watch for metrics page."
+    },
+    {
+        "payer": "Clover Health",
+        "url": "https://www.cloverhealth.com/providers/pre-auth-tools",
+        "type": "MA",
+        "notes": "Provider tools page. Watch for metrics."
+    },
+    {
+        "payer": "CareSource",
+        "url": "https://www.caresource.com/providers/provider-portal/prior-authorization/",
+        "type": "MA",
+        "notes": "Provider PA portal. Watch for public metrics."
+    },
+    {
+        "payer": "Horizon BCBSNJ",
+        "url": "https://www.horizonblue.com/providers/policies-procedures/utilization-management",
+        "type": "MA",
+        "notes": "UM page. Watch for PA metrics addition."
+    },
+    {
+        "payer": "Independence Blue Cross",
+        "url": "https://www.ibx.com/resources/for-providers/policies-and-guidelines/pharmacy-information/prior-authorization",
+        "type": "MA",
+        "notes": "Pharmacy PA page. Watch for broader metrics."
+    },
+    {
+        "payer": "Tufts Health Plan",
+        "url": "https://www.tuftsmedicarepreferred.org/2026-thp-prior-auth",
+        "type": "MA",
+        "notes": "2026 PA guidelines page."
+    },
+    {
+        "payer": "Geisinger",
+        "url": "https://www.geisinger.org/health-plan/providers/ghp-clinical-policies/prior-authorization-form",
+        "type": "MA",
+        "notes": "PA form page. Watch for metrics."
+    },
+    {
+        "payer": "Oscar Health (TX Medical)",
+        "url": "https://www.hioscar.com/prior-authorization-statistics",
+        "type": "QHP",
+        "notes": "ALREADY PUBLISHING state-level PA stats with PDF downloads."
+    },
+    {
+        "payer": "Oscar Health (TX Rx)",
+        "url": "https://www.hioscar.com/prior-authorization-statistics-prescriptions",
+        "type": "QHP",
+        "notes": "ALREADY PUBLISHING state-level Rx PA stats."
+    },
+    {
+        "payer": "Superior HealthPlan",
+        "url": "https://www.superiorhealthplan.com/members/medicaid/resources/prior-authorization.html",
+        "type": "Medicaid",
+        "notes": "Has 2024 CHIP approval/denial rate PDFs. Watch for CY2025."
+    },
+    {
+        "payer": "Aetna Better Health TX",
+        "url": "https://www.aetnabetterhealth.com/texas",
+        "type": "Medicaid",
+        "notes": "TX Medicaid plan. Watch for CMS metrics page."
+    },
+    {
+        "payer": "Texas Children's Health Plan",
+        "url": "https://www.texaschildrenshealthplan.org/providers/provider-resources/prior-authorization-information",
+        "type": "Medicaid",
+        "notes": "Houston-based. BCM teaching affiliate. Watch for metrics."
+    },
+    {
+        "payer": "Community Health Choice",
+        "url": "https://provider.communityhealthchoice.org/resources/prior-authorization-information/",
+        "type": "Medicaid",
+        "notes": "Houston safety-net plan. References TX Gold Card program."
+    },
+    {
+        "payer": "Ambetter Health",
+        "url": "https://www.ambetterhealth.com",
+        "type": "QHP",
+        "notes": "Largest marketplace insurer. Centene subsidiary."
+    },
+    {
+        "payer": "MassHealth",
+        "url": "https://www.mass.gov/info-details/prior-authorization-process-changes-and-metrics",
+        "type": "Medicaid",
+        "notes": "PAGE READY but no data yet. Best state implementation example."
+    }
+]

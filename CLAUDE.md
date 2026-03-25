@@ -75,13 +75,21 @@ Med School Project/
 │
 ├── data/
 │   ├── raw/               ← Unmodified data straight from payer websites
-│   └── processed/         ← Cleaned and normalized data ready for analysis
+│   │   └── SOURCES.md     ← Documents where each raw file came from
+│   ├── processed/         ← Cleaned and normalized data ready for analysis
+│   ├── monitor_urls.json  ← URL watchlist for the site monitor
+│   ├── monitor_hashes.json← (auto-generated) Page fingerprints
+│   └── monitor_logs/      ← (auto-generated) Dated change detection logs
 │
 ├── tests/                 ← Automated tests (verify code works correctly)
 │   └── __init__.py
 │
 └── scripts/               ← Utility scripts you run manually
-    └── setup_db.py        ← Creates the database from schema.sql
+    ├── setup_db.py        ← Creates the database from schema.sql
+    ├── seed_payers.py     ← Loads top 20 MA payers into database
+    ├── seed_medicaid_qhp.py ← Loads TX Medicaid + QHP payers
+    ├── print_checklist.py ← Prints March 31 collection checklist
+    └── monitor_sites.py   ← Checks payer websites for changes
 ```
 
 ## When adding a new file:
