@@ -261,3 +261,344 @@ CREATE TABLE IF NOT EXISTS compliance_checks (
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- ####################################################################
+-- ####################################################################
+--
+--   GRANULAR DATA TABLES (added March 2026)
+--
+--   The tables above capture the CMS-mandated SUMMARY metrics that
+--   every payer must report. But real payer data is much richer —
+--   breakdowns by service type, denial reasons, appeal outcomes,
+--   diagnosis codes, and more.
+--
+--   The tables below store that granular detail. When a payer only
+--   publishes summary data, these tables will have NULLs (blanks)
+--   for that payer — and that's fine. NULL means "not disclosed."
+--
+--   DESIGN PRINCIPLE: Start granular. It's easier to have empty
+--   columns than to add columns later and backfill old data.
+--
+-- ####################################################################
+-- ####################################################################
+
+
+-- ====================================================================
+-- TABLE: source_files
+-- WHERE did we get each piece of data? This is the EVIDENCE CHAIN.
+--
+-- Every report should have at least one source file — the PDF,
+-- screenshot, or HTML page we pulled the data from. This proves
+-- our numbers are real and lets anyone verify them.
+--
+-- ANALOGY: In science, you keep your lab notebook. In journalism,
+-- you keep your recordings. In data research, you keep your sources.
+-- ====================================================================
+CREATE TABLE IF NOT EXISTS source_files (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    -- Which report does this source file belong to?
+    report_id INTEGER NOT NULL REFERENCES metrics_reports(id),
+
+    -- Where is this file stored on our computer?
+    -- Example: "data/raw/oscar_health_tx_2024_medical.pdf"
+    file_path TEXT,
+
+    -- The original URL where we downloaded/found this file.
+    -- Example: "https://assets.ctfassets.net/plyq12u1bv8a/..."
+    original_url TEXT,
+
+    -- What type of file is it?
+    -- No CHECK constraint here — new types may appear.
+    -- Common values: "pdf", "html", "screenshot", "csv", "xlsx"
+    file_type TEXT,
+
+    -- When did we download or capture this file?
+    download_date DATE,
+
+    -- Any notes about the source (e.g., "page 3 of PDF has the table")
+    notes TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ====================================================================
+-- TABLE: service_level_stats
+-- PA outcomes BROKEN DOWN BY SERVICE TYPE.
+--
+-- This is the granular version of data_points. Instead of just
+-- "overall approval rate = 83.9%", this table stores:
+--   "Imaging approval rate = 75.1%"
+--   "Surgery approval rate = 98.0%"
+--   "Therapy approval rate = 71.7%"
+--   ... etc.
+--
+-- Not all payers break down their data this way. When they don't,
+-- we still store a single row with service_category = "ALL" to
+-- hold the aggregate numbers. This way the table works for both
+-- detailed and summary-only payers.
+--
+-- REAL EXAMPLE (Superior HealthPlan CHIP 2024):
+--   service_category = "Imaging"
+--   domain = "medical"
+--   total_requests = 1517
+--   approved_count = 1139
+--   denied_count = 378
+--   approved_pct = 75.1
+--   denied_pct = 24.9
+-- ====================================================================
+CREATE TABLE IF NOT EXISTS service_level_stats (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    -- Which report does this data come from?
+    report_id INTEGER NOT NULL REFERENCES metrics_reports(id),
+
+    -- What category of service? Examples:
+    --   "Imaging", "Surgery", "Therapy", "Behavioral Health",
+    --   "DME/Medical Supplies", "Medication", "Diagnostic Test",
+    --   "Home Health", "Genetic Testing", "ALL" (aggregate)
+    --
+    -- NO CHECK constraint — payers use different category names.
+    -- We normalize them as best we can, but new ones will appear.
+    service_category TEXT NOT NULL,
+
+    -- Is this medical services or prescription drugs?
+    -- Payers report these completely separately (different PDFs,
+    -- different tables, different metrics). We need to distinguish.
+    --   "medical" = procedures, imaging, DME, therapy, etc.
+    --   "rx"      = prescription drug PA
+    --   "all"     = combined (if payer doesn't separate them)
+    domain TEXT NOT NULL DEFAULT 'medical',
+
+    -- Was this for standard (routine) or expedited (urgent) requests?
+    -- Some payers break this down, others don't.
+    --   "standard"  = non-urgent, 7-day decision window
+    --   "expedited" = urgent, 72-hour decision window
+    --   "all"       = combined (most common in current data)
+    urgency_type TEXT NOT NULL DEFAULT 'all',
+
+    -- THE ACTUAL NUMBERS
+    -- We store both counts AND percentages because:
+    --   - Counts are ground truth (you can recompute percentages)
+    --   - But some payers only give percentages (no raw counts)
+    --   - So both can be NULL independently
+
+    -- How many PA requests were submitted for this service type?
+    total_requests INTEGER,
+
+    -- How many were approved?
+    approved_count INTEGER,
+
+    -- How many were denied? (also called "adverse determinations")
+    denied_count INTEGER,
+
+    -- Approval and denial rates as percentages (e.g., 75.1 for 75.1%)
+    approved_pct REAL,
+    denied_pct REAL,
+
+    -- Any notes specific to this row
+    notes TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ====================================================================
+-- TABLE: denial_reasons
+-- WHY were PA requests denied?
+--
+-- Each row = one reason category for denials, linked to either:
+--   - A specific service type (via service_stat_id), OR
+--   - The report as a whole (via report_id, when no service breakdown)
+--
+-- REAL EXAMPLE (Oscar Health TX 2024, Medications):
+--   reason_category = "medical_necessity"
+--   denial_count = 549
+--   denial_pct = 97.5  (of all medication denials)
+--
+-- REAL EXAMPLE (Superior CHIP 2024, Imaging):
+--   reason_category = "non_covered_benefit"
+--   denial_count = NULL  (they gave percentage only)
+--   denial_pct = 3.6
+--
+-- Common reason categories we've seen so far:
+--   "medical_necessity"      — doesn't meet clinical guidelines
+--   "administrative"         — paperwork issue, not clinical
+--   "experimental"           — treatment considered experimental
+--   "non_covered_benefit"    — plan simply doesn't cover this
+--   "quantity_limit"         — exceeds allowed amount (Rx)
+--   "non_formulary"          — drug not on the approved drug list
+--   "trial_failure_required" — must try cheaper drug first (step therapy)
+-- ====================================================================
+CREATE TABLE IF NOT EXISTS denial_reasons (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    -- Link to a specific service breakdown row (preferred when available).
+    -- Can be NULL if this reason applies to the report as a whole.
+    service_stat_id INTEGER REFERENCES service_level_stats(id),
+
+    -- Link to the report directly (used when no service breakdown exists).
+    -- At least one of service_stat_id or report_id should be filled.
+    report_id INTEGER REFERENCES metrics_reports(id),
+
+    -- What was the reason for denial?
+    -- NO CHECK constraint — new reasons will appear from different payers.
+    -- We use standardized lowercase_with_underscores where possible.
+    reason_category TEXT NOT NULL,
+
+    -- How many denials had this reason?
+    denial_count INTEGER,
+
+    -- What percentage of denials had this reason?
+    denial_pct REAL,
+
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ====================================================================
+-- TABLE: appeal_outcomes
+-- What happened when denied requests were APPEALED?
+--
+-- This is critical data. If a payer denies 30% of requests but 50%
+-- of appeals are overturned, that suggests the denials were wrong —
+-- the payer is wasting everyone's time and money.
+--
+-- Two types of appeals:
+--   "internal" — the payer reviews their own denial (first step)
+--   "external_iro" — an Independent Review Organization reviews it
+--                     (second step, like a court of appeals)
+--
+-- REAL EXAMPLE (Oscar Health TX Rx 2024):
+--   appeal_type = "internal"
+--   total_appeals = 1259
+--   overturned_count = 624
+--   upheld_count = 635
+--   overturn_pct = 49.6  (basically a coin flip!)
+-- ====================================================================
+CREATE TABLE IF NOT EXISTS appeal_outcomes (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    -- Link to a specific service breakdown row (when available)
+    service_stat_id INTEGER REFERENCES service_level_stats(id),
+
+    -- Link to the report directly (when no service breakdown)
+    report_id INTEGER REFERENCES metrics_reports(id),
+
+    -- What type of appeal was this?
+    --   "internal"     — reviewed by the payer themselves
+    --   "external_iro" — reviewed by an Independent Review Organization
+    --   "all"          — combined (if payer doesn't separate them)
+    appeal_type TEXT NOT NULL DEFAULT 'all',
+
+    -- How many denials were appealed in total?
+    total_appeals INTEGER,
+
+    -- How many appeals resulted in the denial being OVERTURNED (approved)?
+    overturned_count INTEGER,
+
+    -- How many appeals were UPHELD (denial stands)?
+    upheld_count INTEGER,
+
+    -- Overturn rate as a percentage
+    overturn_pct REAL,
+
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ====================================================================
+-- TABLE: diagnosis_pa_volume
+-- Which DIAGNOSES (medical conditions) drive the most PA requests?
+--
+-- This tells us what conditions are most burdened by prior auth.
+-- If "hypertension" (high blood pressure) is the #1 diagnosis
+-- triggering PA, that's a common condition being gatekept — worth
+-- investigating whether that PA requirement serves any purpose.
+--
+-- Uses ICD-10 codes — the international system for classifying
+-- diseases. Every diagnosis has a code (e.g., I10 = hypertension).
+-- You'll learn these in med school.
+--
+-- REAL EXAMPLE (Oscar Health TX Rx 2024):
+--   icd10_code = "I10"
+--   description = "Essential (primary) hypertension"
+--   pct_of_total_volume = 1.60
+--   rank = 2
+-- ====================================================================
+CREATE TABLE IF NOT EXISTS diagnosis_pa_volume (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    -- Which report does this come from?
+    report_id INTEGER NOT NULL REFERENCES metrics_reports(id),
+
+    -- The ICD-10 diagnosis code (e.g., "I10", "E11.9", "F41.1")
+    icd10_code TEXT,
+
+    -- Human-readable description of the diagnosis
+    description TEXT,
+
+    -- What percentage of total PA volume was for this diagnosis?
+    pct_of_total_volume REAL,
+
+    -- Rank in the list (1 = most common, 2 = second most, etc.)
+    rank INTEGER,
+
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ====================================================================
+-- TABLE: prescriber_stats
+-- WHO is submitting PA requests?
+--
+-- Tracks the types of healthcare providers (MD, NP, DO, PA) and
+-- their specialties (Family Practice, Cardiology, etc.) that submit
+-- the most PA requests.
+--
+-- This data can reveal whether PA burden falls disproportionately
+-- on primary care vs. specialists, or on physicians vs. mid-levels.
+--
+-- REAL EXAMPLE (Oscar Health TX Rx 2024):
+--   prescriber_type = "MD"
+--   specialty = NULL
+--   rank = 1
+--
+--   prescriber_type = NULL
+--   specialty = "Family Practice"
+--   rank = 2
+-- ====================================================================
+CREATE TABLE IF NOT EXISTS prescriber_stats (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    -- Which report does this come from?
+    report_id INTEGER NOT NULL REFERENCES metrics_reports(id),
+
+    -- Type of prescriber (e.g., "MD", "DO", "NP", "PA")
+    -- Can be NULL if this row is about specialty instead
+    prescriber_type TEXT,
+
+    -- Medical specialty (e.g., "Family Practice", "Cardiology")
+    -- Can be NULL if this row is about prescriber type instead
+    specialty TEXT,
+
+    -- What percentage of PA requests came from this type/specialty?
+    pct_of_total REAL,
+
+    -- Rank (1 = submits the most PA requests)
+    rank INTEGER,
+
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

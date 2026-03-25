@@ -124,3 +124,87 @@ METRIC_TYPES = {
     "avg_time_exp_hours": "Average Decision Time — Expedited (Hours)",
     "median_time_exp_hours": "Median Decision Time — Expedited (Hours)",
 }
+
+
+# ====================================================================
+# SERVICE CATEGORIES
+#
+# Payers break down their PA data by type of medical service.
+# Different payers use different names for the same categories,
+# so we STANDARDIZE them here. When entering data, map whatever
+# the payer calls it to one of these standard names.
+#
+# This list will GROW as we encounter new payers with different
+# category names. Just add new entries — no database changes needed.
+#
+# The keys are what we store in the database.
+# The values are human-readable display names.
+# ====================================================================
+SERVICE_CATEGORIES = {
+    # --- Medical services ---
+    "imaging": "Imaging Services (MRI, CT, X-ray, etc.)",
+    "surgery": "Surgical Services & Procedures",
+    "therapy": "Medicine Services: Therapy (PT, OT, Speech)",
+    "behavioral_health": "Behavioral Health Services",
+    "dme": "DME / Medical Supplies (wheelchairs, CPAP, etc.)",
+    "home_health": "Home Health Services",
+    "genetic_testing": "Genetic Testing & Counseling",
+    "medication": "Clinician-Administered Drugs (infusions, injections)",
+    "diagnostic_test": "Diagnostic Tests (labs, pathology)",
+    "sleep_study": "Medicine Services: Sleep Studies",
+    "transplant": "Transplant Services",
+    "skilled_nursing": "Skilled Nursing Facility",
+    "rehab": "Inpatient Rehabilitation",
+    "transport": "Non-Emergent Medical Transportation",
+    "implantable_device": "Implantable Devices",
+
+    # --- Prescription drug categories (when Rx is broken down) ---
+    "rx_specialty": "Specialty Pharmacy",
+    "rx_non_formulary": "Non-Formulary Drugs",
+    "rx_step_therapy": "Step Therapy Required Drugs",
+
+    # --- Aggregate (when no breakdown is provided) ---
+    "all": "All Services (Aggregate)",
+}
+
+# ====================================================================
+# DENIAL REASON CATEGORIES
+#
+# When a PA request is denied, payers must give a reason. These are
+# the standardized reason categories we've seen across payers.
+#
+# Same principle: this list grows as we encounter new reasons.
+# No database changes needed — just add to this dictionary.
+# ====================================================================
+DENIAL_REASONS = {
+    "medical_necessity": "Criteria for Medical Necessity Not Met",
+    "administrative": "Administrative / Paperwork Issue",
+    "experimental": "Experimental / Investigational Treatment",
+    "non_covered_benefit": "Benefit Not Covered Under Plan",
+    "quantity_limit": "Exceeds Quantity Limit",
+    "non_formulary": "Drug Not on Formulary (Approved Drug List)",
+    "trial_failure_required": "Step Therapy Required (Must Try Other Drug First)",
+    "duplicate_request": "Duplicate / Already Submitted Request",
+    "incomplete_documentation": "Incomplete Clinical Documentation",
+    "out_of_network": "Out-of-Network Provider",
+    "other": "Other / Unspecified Reason",
+}
+
+# ====================================================================
+# APPEAL TYPES
+# ====================================================================
+APPEAL_TYPES = {
+    "internal": "Internal Appeal (reviewed by payer)",
+    "external_iro": "External Review by Independent Review Organization (IRO)",
+    "all": "All Appeals (Combined)",
+}
+
+# ====================================================================
+# DOMAINS
+# Payers report medical services and prescription drugs separately.
+# ====================================================================
+DOMAINS = {
+    "medical": "Medical Services (procedures, imaging, DME, etc.)",
+    "rx": "Prescription Drugs (pharmacy)",
+    "all": "All Domains (Combined)",
+}
